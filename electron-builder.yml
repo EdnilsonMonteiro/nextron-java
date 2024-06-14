@@ -7,6 +7,10 @@ directories:
 files:
   - from: .
     filter:
+      - assets/**  
       - package.json
       - app
 publish: null
+extraResources:
+  - from: "assets"
+    to: "assets"

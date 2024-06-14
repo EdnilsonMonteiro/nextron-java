@@ -10,21 +10,6 @@ import { Footer } from "../components/Footer";
 import { Hero } from "../components/Hero";
 
 export default function HomePage() {
-  const [fingerprint, setFingerprint] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    window.api.onFingerprintCaptured((data) => {
-      setFingerprint(data);
-    });
-    window.api.onFingerprintError((error) => {
-      setError(error);
-    });
-  }, []);
-
-  const captureFingerprint = () => {
-    window.api.captureFingerprint();
-  };
 
   return (
     <React.Fragment>
@@ -42,7 +27,6 @@ export default function HomePage() {
         <Hero title={`⚡Electron⚡ + Next.js + Chakra UI = 🔥`} />
         <Footer>
           <Button
-            onClick={captureFingerprint}
             variant="solid"
             colorScheme="teal"
             rounded="button"
@@ -50,8 +34,6 @@ export default function HomePage() {
           >
             Capture Fingerprint
           </Button>
-          {fingerprint && <pre>{JSON.stringify(fingerprint, null, 2)}</pre>}
-          {error && <pre>Error: {error}</pre>}
         </Footer>
       </Container>
     </React.Fragment>

@@ -1,7 +1,8 @@
 import path from "path";
 import { app, ipcMain } from "electron";
 import serve from "electron-serve";
-import { createWindow } from "./helpers";
+import { createMainWindow } from "./mainWindow";
+import { getGreeting, add } from "./javaMethods";
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -12,29 +13,33 @@ if (isProd) {
 }
 
 (async () => {
-  await app.whenReady();
+  await createMainWindow();
 
-  const mainWindow = createWindow("main", {
-    width: 1000,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-    },
+  ipcMain.handle("getGreeting", async (_event, name: string) => {
+    return new Promise((resolve) => {
+      getGreeting(name, (error, result) => {
+        if (error) {
+          resolve({ error });
+        } else {
+          resolve({ result });
+        }
+      });
+    });
   });
 
-  if (isProd) {
-    await mainWindow.loadURL("app://./home");
-  } else {
-    const port = process.argv[2];
-    await mainWindow.loadURL(`http://localhost:${port}/home`);
-    mainWindow.webContents.openDevTools();
-  }
+  ipcMain.handle("add", async (_event, a: number, b: number) => {
+    return new Promise((resolve) => {
+      add(a, b, (error, result) => {
+        if (error) {
+          resolve({ error });
+        } else {
+          resolve({ result });
+        }
+      });
+    });
+  });
 })();
 
 app.on("window-all-closed", () => {
   app.quit();
-});
-
-ipcMain.on("message", async (event, arg) => {
-  event.reply("message", `${arg} World!`);
 });
