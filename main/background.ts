@@ -3,6 +3,10 @@ import { app, ipcMain } from "electron";
 import serve from "electron-serve";
 import { createMainWindow } from "./mainWindow";
 import { getGreeting, add } from "./javaMethods";
+import { autoUpdater } from "electron-updater";
+import dotenv from 'dotenv';
+
+dotenv.config();  // Carrega as variáveis de ambiente do .env
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -14,6 +18,10 @@ if (isProd) {
 
 (async () => {
   await createMainWindow();
+
+  if (isProd) {
+    autoUpdater.checkForUpdatesAndNotify();
+  }
 
   ipcMain.handle("getGreeting", async (_event, name: string) => {
     return new Promise((resolve) => {
@@ -42,4 +50,15 @@ if (isProd) {
 
 app.on("window-all-closed", () => {
   app.quit();
+});
+
+// Handle update events
+autoUpdater.on('update-available', () => {
+  console.log('Update available.');
+  // Optionally notify the user about the update
+});
+
+autoUpdater.on('update-downloaded', () => {
+  console.log('Update downloaded; will install now');
+  autoUpdater.quitAndInstall();
 });
