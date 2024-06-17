@@ -1,5 +1,5 @@
 import path from "path";
-import { app, ipcMain } from "electron";
+import { app, ipcMain, Notification } from "electron";
 import serve from "electron-serve";
 import { createMainWindow } from "./mainWindow";
 import { getGreeting, add } from "./javaMethods";
@@ -18,7 +18,7 @@ if (isProd) {
   app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
 
-(async () => {
+app.whenReady().then(async () => {
   await createMainWindow();
 
   if (isProd) {
@@ -48,38 +48,53 @@ if (isProd) {
       });
     });
   });
-})();
+
+  const NOTIFICATION_TITLE = 'Basic Notification';
+  const NOTIFICATION_BODY = 'Notification from the Main process';
+
+  function showNotification(title, body) {
+    new Notification({ title: title, body: body }).show();
+  }
+
+  autoUpdater.on('checking-for-update', () => {
+    console.log('Checking for update...');
+    showNotification('Checking for Update', 'Checking for update...');
+  });
+
+  autoUpdater.on('update-available', (info) => {
+    console.log('Update available.', info);
+    showNotification('Update Available', 'Update available.');
+  });
+
+  autoUpdater.on('update-not-available', (info) => {
+    console.log('Update not available.', info);
+    showNotification('Update Not Available', 'Update not available.');
+  });
+
+  autoUpdater.on('error', (err) => {
+    console.log('Error in auto-updater.', err);
+    showNotification('Error', `Error in auto-updater: ${err}`);
+  });
+
+  autoUpdater.on('download-progress', (progressObj) => {
+    let log_message = "Download speed: " + progressObj.bytesPerSecond;
+    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    console.log(log_message);
+    showNotification('Download Progress', log_message);
+  });
+
+  autoUpdater.on('update-downloaded', (info) => {
+    console.log('Update downloaded; will install in 5 seconds', info);
+    showNotification('Update Downloaded', 'Update downloaded; will install in 5 seconds');
+    setTimeout(function() {
+      autoUpdater.quitAndInstall();
+    }, 5000);
+  });
+
+  showNotification(NOTIFICATION_TITLE, NOTIFICATION_BODY);
+});
 
 app.on("window-all-closed", () => {
   app.quit();
-});
-  
-autoUpdater.on('checking-for-update', () => {
-  console.log('Checking for update...');
-});
-
-autoUpdater.on('update-available', (info) => {
-  console.log('Update available.', info);
-});
-
-autoUpdater.on('update-not-available', (info) => {
-  console.log('Update not available.', info);
-});
-
-autoUpdater.on('error', (err) => {
-  console.log('Error in auto-updater.', err);
-});
-
-autoUpdater.on('download-progress', (progressObj) => {
-  let log_message = "Download speed: " + progressObj.bytesPerSecond;
-  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
-  console.log(log_message);
-});
-
-autoUpdater.on('update-downloaded', (info) => {
-  console.log('Update downloaded; will install in 5 seconds', info);
-  setTimeout(function() {
-    autoUpdater.quitAndInstall();
-  }, 5000);
 });
