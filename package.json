@@ -9,7 +9,7 @@
     "dev": "nextron",
     "build": "nextron build",
     "postinstall": "electron-builder install-app-deps",
-    "publish": "cross-env GH_TOKEN=$GH_TOKEN electron-builder --publish always"
+    "publish": "node publish.js"
   },
   "dependencies": {
     "electron-serve": "^1.3.0",

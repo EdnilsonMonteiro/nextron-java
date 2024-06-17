@@ -8,6 +8,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();  // Carrega as variáveis de ambiente do .env
 
+console.log('GH_TOKEN:', process.env.GH_TOKEN);
+
 const isProd = process.env.NODE_ENV === "production";
 
 if (isProd) {
