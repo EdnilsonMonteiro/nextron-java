@@ -53,14 +53,33 @@ if (isProd) {
 app.on("window-all-closed", () => {
   app.quit();
 });
-
-// Handle update events
-autoUpdater.on('update-available', () => {
-  console.log('Update available.');
-  // Optionally notify the user about the update
+  
+autoUpdater.on('checking-for-update', () => {
+  console.log('Checking for update...');
 });
 
-autoUpdater.on('update-downloaded', () => {
-  console.log('Update downloaded; will install now');
-  autoUpdater.quitAndInstall();
+autoUpdater.on('update-available', (info) => {
+  console.log('Update available.', info);
+});
+
+autoUpdater.on('update-not-available', (info) => {
+  console.log('Update not available.', info);
+});
+
+autoUpdater.on('error', (err) => {
+  console.log('Error in auto-updater.', err);
+});
+
+autoUpdater.on('download-progress', (progressObj) => {
+  let log_message = "Download speed: " + progressObj.bytesPerSecond;
+  log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
+  log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+  console.log(log_message);
+});
+
+autoUpdater.on('update-downloaded', (info) => {
+  console.log('Update downloaded; will install in 5 seconds', info);
+  setTimeout(function() {
+    autoUpdater.quitAndInstall();
+  }, 5000);
 });

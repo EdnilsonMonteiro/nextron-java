@@ -1,9 +1,9 @@
 {
   "private": true,
   "name": "poc-biometria-digital",
-  "description": "Aplicação teste para ver se o Electron atende aos requisito da biometria digital",
-  "version": "1.0.0",
-  "author": "Ednilson Monteiro",
+  "description": "Teste para nova biometria digital",
+  "version": "1.0.2",
+  "author": "Ketan Patel <ktan.p.patel@gmail.com>",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
@@ -13,9 +13,7 @@
   },
   "dependencies": {
     "electron-serve": "^1.3.0",
-    "electron-store": "^8.2.0",
-    "electron-updater": "^6.2.1",
-    "dotenv": "^16.0.1"
+    "electron-store": "^8.2.0"
   },
   "devDependencies": {
     "@chakra-ui/icons": "^2.1.1",
@@ -32,11 +30,32 @@
     "nextron": "^8.15.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "typescript": "^5.4.5",
-    "cross-env": "^7.0.3"
+    "typescript": "^5.4.5"
   },
   "build": {
     "appId": "com.example.app",
+    "productName": "My Nextron App",
+    "copyright": "Copyright © 2018 Yoshihide Shiono",
+    "directories": {
+      "output": "dist",
+      "buildResources": "resources"
+    },
+    "files": [
+      {
+        "from": ".",
+        "filter": [
+          "assets/**",
+          "package.json",
+          "app/**"
+        ]
+      }
+    ],
+    "extraResources": [
+      {
+        "from": "assets",
+        "to": "assets"
+      }
+    ],
     "publish": [
       {
         "provider": "github",

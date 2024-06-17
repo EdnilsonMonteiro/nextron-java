@@ -7,9 +7,9 @@ directories:
 files:
   - from: .
     filter:
-      - assets/**  
+      - assets/**
       - package.json
-      - app
+      - app/**
 publish: null
 extraResources:
   - from: "assets"
