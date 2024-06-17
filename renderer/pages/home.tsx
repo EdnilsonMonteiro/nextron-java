@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Head from 'next/head';
-import Image from 'next/image';
 import { Button, Input, VStack, Text, Link as ChakraLink } from '@chakra-ui/react';
 
 import { Container } from '../components/Container';
@@ -41,12 +40,6 @@ export default function HomePage() {
       </Head>
       <Container minHeight="100vh">
         <DarkModeSwitch />
-        <Image
-          src="/images/logo.png"
-          alt="Logo image"
-          width={200}
-          height={200}
-        />
         <Hero title={`⚡Electron⚡ + Next.js + Chakra UI = 🔥`} />
         <VStack spacing={4}>
           <Input

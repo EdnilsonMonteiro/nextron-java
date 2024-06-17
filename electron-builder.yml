@@ -1,6 +1,6 @@
 appId: com.example.nextron
-productName: My Nextron App
-copyright: Copyright © 2018 Yoshihide Shiono
+productName: POC Biometria Digital
+copyright: Copyright © 2024 Ednilson Monteiro
 directories:
   output: dist
   buildResources: resources

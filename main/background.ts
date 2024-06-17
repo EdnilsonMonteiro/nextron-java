@@ -1,5 +1,5 @@
 import path from "path";
-import { app, ipcMain, Notification } from "electron";
+import { app, ipcMain, Notification, dialog, MessageBoxOptions  } from "electron";
 import serve from "electron-serve";
 import { createMainWindow } from "./mainWindow";
 import { getGreeting, add } from "./javaMethods";
@@ -7,6 +7,15 @@ import { autoUpdater } from "electron-updater";
 import dotenv from 'dotenv';
 
 dotenv.config();  // Carrega as variáveis de ambiente do .env
+
+const server = 'https://github.com/EdnilsonMonteiro/nextron-java';
+const feed = `${server}/releases/latest`;
+
+autoUpdater.setFeedURL({
+  provider: 'generic',
+  url: feed
+});
+
 
 console.log('GH_TOKEN:', process.env.GH_TOKEN);
 
@@ -20,10 +29,6 @@ if (isProd) {
 
 app.whenReady().then(async () => {
   await createMainWindow();
-
-  if (isProd) {
-    autoUpdater.checkForUpdatesAndNotify();
-  }
 
   ipcMain.handle("getGreeting", async (_event, name: string) => {
     return new Promise((resolve) => {
@@ -49,12 +54,28 @@ app.whenReady().then(async () => {
     });
   });
 
+  autoUpdater.checkForUpdatesAndNotify();
+
   const NOTIFICATION_TITLE = 'Basic Notification';
   const NOTIFICATION_BODY = 'Notification from the Main process';
 
   function showNotification(title, body) {
     new Notification({ title: title, body: body }).show();
   }
+
+  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, date, url) => {
+    const dialogOpts: MessageBoxOptions = {
+      type: 'info',
+      buttons: ['Restart', 'Later'],
+      title: 'Application Update',
+      message: process.platform === 'win32' ? releaseNotes : releaseName,
+      detail: 'A new version has been downloaded. Restart the application to apply the updates.'
+    };
+
+    dialog.showMessageBox(dialogOpts).then((returnValue) => {
+      if (returnValue.response === 0) autoUpdater.quitAndInstall();
+    });
+});
 
   autoUpdater.on('checking-for-update', () => {
     console.log('Checking for update...');

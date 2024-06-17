@@ -2,7 +2,7 @@
   "private": true,
   "name": "poc-biometria-digital",
   "description": "Teste para nova biometria digital",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "Ketan Patel <ktan.p.patel@gmail.com>",
   "main": "app/background.js",
   "scripts": {
@@ -34,8 +34,8 @@
   },
   "build": {
     "appId": "com.example.app",
-    "productName": "My Nextron App",
-    "copyright": "Copyright © 2018 Yoshihide Shiono",
+    "productName": "POC Biometria Digital",
+    "copyright": "Copyright © 2024 Ednilson Monteiro",
     "directories": {
       "output": "dist",
       "buildResources": "resources"
