@@ -2,8 +2,8 @@
   "private": true,
   "name": "poc-biometria-digital",
   "description": "Teste para nova biometria digital",
-  "version": "1.0.3",
-  "author": "Ketan Patel <ktan.p.patel@gmail.com>",
+  "version": "1.0.6",
+  "author": "Ednilson Monteiro",
   "main": "app/background.js",
   "scripts": {
     "dev": "nextron",
@@ -58,11 +58,20 @@
     ],
     "publish": [
       {
-        "provider": "github",
-        "owner": "EdnilsonMonteiro",
-        "repo": "nextron-java",
-        "releaseType": "release"
+        "provider": "generic",
+        "url": "https://github.com/EdnilsonMonteiro/nextron-java/releases/latest"
       }
-    ]
+    ],
+    "win": {
+      "target": "nsis",
+      "publish": [
+        {
+          "provider": "github",
+          "owner": "EdnilsonMonteiro",
+          "repo": "nextron-java",
+          "releaseType": "release"
+        }
+      ]
+    }
   }
 }

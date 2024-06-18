@@ -1,23 +1,21 @@
 import path from "path";
-import fs from 'fs';
-import { app, ipcMain, Notification, dialog, MessageBoxOptions } from "electron";
+import fs from "fs";
+import {
+  app,
+  ipcMain,
+  Notification,
+  dialog,
+  MessageBoxOptions,
+} from "electron";
 import serve from "electron-serve";
 import { createMainWindow } from "./mainWindow";
 import { getGreeting, add } from "./javaMethods";
 import { autoUpdater } from "electron-updater";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
-dotenv.config();  // Carrega as variáveis de ambiente do .env
+dotenv.config();
 
-const server = 'https://github.com/EdnilsonMonteiro/nextron-java';
-const feed = `${server}/releases/latest`;
-
-autoUpdater.setFeedURL({
-  provider: 'generic',
-  url: feed,
-});
-
-console.log('GH_TOKEN:', process.env.GH_TOKEN);
+console.log("GH_TOKEN:", process.env.GH_TOKEN);
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -27,16 +25,16 @@ if (isProd) {
   app.setPath("userData", `${app.getPath("userData")} (development)`);
 }
 
-const logDirectory = path.join(app.getPath('userData'), 'logs');
+const logDirectory = path.join(app.getPath("userData"), "logs");
 if (!fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory);
 }
 
-const logFilePath = path.join(logDirectory, 'notifications.log');
+const logFilePath = path.join(logDirectory, "notifications.log");
 
 function logNotification(message) {
   const logMessage = `${new Date().toISOString()} - ${message}\n`;
-  fs.appendFileSync(logFilePath, logMessage, 'utf8');
+  fs.appendFileSync(logFilePath, logMessage, "utf8");
 }
 
 function showNotification(title, body) {
@@ -72,62 +70,72 @@ app.whenReady().then(async () => {
     });
   });
 
-  autoUpdater.checkForUpdatesAndNotify();
-
-  const NOTIFICATION_TITLE = 'Basic Notification';
-  const NOTIFICATION_BODY = 'Notification from the Main process';
-
-  autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, date, url) => {
-    const dialogOpts: MessageBoxOptions = {
-      type: 'info',
-      buttons: ['Restart', 'Later'],
-      title: 'Application Update',
-      message: process.platform === 'win32' ? releaseNotes : releaseName,
-      detail: 'A new version has been downloaded. Restart the application to apply the updates.'
-    };
-
-    dialog.showMessageBox(dialogOpts).then((returnValue) => {
-      if (returnValue.response === 0) autoUpdater.quitAndInstall();
-    });
-});
-
-  autoUpdater.on('checking-for-update', () => {
-    const message = 'Checking for update...';
+  autoUpdater.on("checking-for-update", () => {
+    const message = "Checking for update...";
     console.log(message);
-    showNotification('Checking for Update', message);
+    showNotification("Checking for Update", message);
   });
 
-  autoUpdater.on('update-available', (info) => {
-    const message = 'Update available.';
+  autoUpdater.on("update-available", (info) => {
+    const message = "Update available.";
     console.log(message, info);
-    showNotification('Update Available', message);
+    showNotification("Update Available", message);
   });
 
-  autoUpdater.on('update-not-available', (info) => {
-    const message = 'Update not available.';
+  autoUpdater.on("update-not-available", (info) => {
+    const message = "Update not available.";
     console.log(message, info);
-    showNotification('Update Not Available', message);
+    showNotification("Update Not Available", message);
   });
 
-  autoUpdater.on('error', (err) => {
+  autoUpdater.on("error", (err) => {
     const message = `Error in auto-updater: ${err}`;
     console.log(message);
-    showNotification('Error', message);
+    showNotification("Error", message);
   });
 
-  autoUpdater.on('download-progress', (progressObj) => {
+  autoUpdater.checkForUpdatesAndNotify();
+
+  const NOTIFICATION_TITLE = "Basic Notification";
+  const NOTIFICATION_BODY = "Notification from the Main process";
+
+  autoUpdater.on(
+    "update-downloaded",
+    (event, releaseNotes, releaseName, date, url) => {
+      const dialogOpts: MessageBoxOptions = {
+        type: "info",
+        buttons: ["Restart", "Later"],
+        title: "Application Update",
+        message: process.platform === "win32" ? releaseNotes : releaseName,
+        detail:
+          "A new version has been downloaded. Restart the application to apply the updates.",
+      };
+
+      dialog.showMessageBox(dialogOpts).then((returnValue) => {
+        if (returnValue.response === 0) autoUpdater.quitAndInstall();
+      });
+    }
+  );
+
+  autoUpdater.on("download-progress", (progressObj) => {
     let log_message = "Download speed: " + progressObj.bytesPerSecond;
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+    log_message = log_message + " - Downloaded " + progressObj.percent + "%";
+    log_message =
+      log_message +
+      " (" +
+      progressObj.transferred +
+      "/" +
+      progressObj.total +
+      ")";
     console.log(log_message);
-    showNotification('Download Progress', log_message);
+    showNotification("Download Progress", log_message);
   });
 
-  autoUpdater.on('update-downloaded', (info) => {
-    const message = 'Update downloaded; will install in 5 seconds';
+  autoUpdater.on("update-downloaded", (info) => {
+    const message = "Update downloaded; will install in 5 seconds";
     console.log(message, info);
-    showNotification('Update Downloaded', message);
-    setTimeout(function() {
+    showNotification("Update Downloaded", message);
+    setTimeout(function () {
       autoUpdater.quitAndInstall();
     }, 5000);
   });
