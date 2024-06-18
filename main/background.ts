@@ -1,5 +1,6 @@
 import path from "path";
-import { app, ipcMain, Notification, dialog, MessageBoxOptions  } from "electron";
+import fs from 'fs';
+import { app, ipcMain, Notification, dialog, MessageBoxOptions } from "electron";
 import serve from "electron-serve";
 import { createMainWindow } from "./mainWindow";
 import { getGreeting, add } from "./javaMethods";
@@ -13,9 +14,8 @@ const feed = `${server}/releases/latest`;
 
 autoUpdater.setFeedURL({
   provider: 'generic',
-  url: feed
+  url: feed,
 });
-
 
 console.log('GH_TOKEN:', process.env.GH_TOKEN);
 
@@ -25,6 +25,24 @@ if (isProd) {
   serve({ directory: "app" });
 } else {
   app.setPath("userData", `${app.getPath("userData")} (development)`);
+}
+
+const logDirectory = path.join(app.getPath('userData'), 'logs');
+if (!fs.existsSync(logDirectory)) {
+  fs.mkdirSync(logDirectory);
+}
+
+const logFilePath = path.join(logDirectory, 'notifications.log');
+
+function logNotification(message) {
+  const logMessage = `${new Date().toISOString()} - ${message}\n`;
+  fs.appendFileSync(logFilePath, logMessage, 'utf8');
+}
+
+function showNotification(title, body) {
+  const notificationMessage = `${title}: ${body}`;
+  new Notification({ title: title, body: body }).show();
+  logNotification(notificationMessage);
 }
 
 app.whenReady().then(async () => {
@@ -59,10 +77,6 @@ app.whenReady().then(async () => {
   const NOTIFICATION_TITLE = 'Basic Notification';
   const NOTIFICATION_BODY = 'Notification from the Main process';
 
-  function showNotification(title, body) {
-    new Notification({ title: title, body: body }).show();
-  }
-
   autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName, date, url) => {
     const dialogOpts: MessageBoxOptions = {
       type: 'info',
@@ -78,23 +92,27 @@ app.whenReady().then(async () => {
 });
 
   autoUpdater.on('checking-for-update', () => {
-    console.log('Checking for update...');
-    showNotification('Checking for Update', 'Checking for update...');
+    const message = 'Checking for update...';
+    console.log(message);
+    showNotification('Checking for Update', message);
   });
 
   autoUpdater.on('update-available', (info) => {
-    console.log('Update available.', info);
-    showNotification('Update Available', 'Update available.');
+    const message = 'Update available.';
+    console.log(message, info);
+    showNotification('Update Available', message);
   });
 
   autoUpdater.on('update-not-available', (info) => {
-    console.log('Update not available.', info);
-    showNotification('Update Not Available', 'Update not available.');
+    const message = 'Update not available.';
+    console.log(message, info);
+    showNotification('Update Not Available', message);
   });
 
   autoUpdater.on('error', (err) => {
-    console.log('Error in auto-updater.', err);
-    showNotification('Error', `Error in auto-updater: ${err}`);
+    const message = `Error in auto-updater: ${err}`;
+    console.log(message);
+    showNotification('Error', message);
   });
 
   autoUpdater.on('download-progress', (progressObj) => {
@@ -106,8 +124,9 @@ app.whenReady().then(async () => {
   });
 
   autoUpdater.on('update-downloaded', (info) => {
-    console.log('Update downloaded; will install in 5 seconds', info);
-    showNotification('Update Downloaded', 'Update downloaded; will install in 5 seconds');
+    const message = 'Update downloaded; will install in 5 seconds';
+    console.log(message, info);
+    showNotification('Update Downloaded', message);
     setTimeout(function() {
       autoUpdater.quitAndInstall();
     }, 5000);
