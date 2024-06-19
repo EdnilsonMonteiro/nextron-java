@@ -12,8 +12,11 @@
     "publish": "node publish.js"
   },
   "dependencies": {
+    "dotenv": "^16.4.5",
     "electron-serve": "^1.3.0",
-    "electron-store": "^8.2.0"
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.2.1",
+    "java-caller": "^4.0.0"
   },
   "devDependencies": {
     "@chakra-ui/icons": "^2.1.1",
