@@ -2,7 +2,7 @@
   "private": true,
   "name": "poc-biometria-digital",
   "description": "Teste para nova biometria digital",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "author": "Ednilson Monteiro",
   "main": "app/background.js",
   "scripts": {
