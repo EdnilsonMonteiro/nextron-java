@@ -14,20 +14,29 @@ import { Footer } from "../components/Footer";
 import { Hero } from "../components/Hero";
 
 export default function HomePage() {
-  const [name, setName] = useState('');
-  const [greeting, setGreeting] = useState('');
-  const [a, setA] = useState(null);
-  const [b, setB] = useState(null);
-  const [sum, setSum] = useState(null);
+  const [name, setName] = useState("");
+  const [greeting, setGreeting] = useState("");
+  const [a, setA] = useState(0);
+  const [b, setB] = useState(0);
+  const [sum, setSum] = useState<number | null>(null);
 
   const handleGetGreeting = async () => {
-    const response = await ipcRenderer.invoke('sayHello', name);
-    setGreeting(response);
+    const response = await window.ipc.invoke("sayHello", name);
+    console.log("clicado");
+    if (response.error) {
+      console.error(response.error);
+    } else {
+      setGreeting(response.result);
+    }
   };
 
   const handleAdd = async () => {
-    const result = await ipcRenderer.invoke('sum', a, b);
-    setSum(result);
+    const response = await window.ipc.invoke("sum", a, b);
+    if (response.error) {
+      console.error(response.error);
+    } else {
+      setSum(parseInt(response.result, 10));
+    }
   };
 
   return (
