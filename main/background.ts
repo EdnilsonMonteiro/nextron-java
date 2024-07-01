@@ -46,22 +46,28 @@ function showNotification(title, body) {
 app.whenReady().then(async () => {
   await createMainWindow();
 
-  ipcMain.handle('sayHello', async (event, name) => {
-    try {
-      const greeting = await sayHello(name);
-      return greeting;
-    } catch (error) {
-      return error;
-    }
+  ipcMain.handle("sayHello", async (_event, name: string) => {
+    return new Promise((resolve) => {
+      sayHello(name, (error, result) => {
+        if (error) {
+          resolve({ error });
+        } else {
+          resolve({ result });
+        }
+      });
+    });
   });
-  
-  ipcMain.handle('sum', async (event, a, b) => {
-    try {
-      const result = await sum(a, b);
-      return result;
-    } catch (error) {
-      return error;
-    }
+
+  ipcMain.handle("sum", async (_event, a: number, b: number) => {
+    return new Promise((resolve) => {
+      sum(a, b, (error, result) => {
+        if (error) {
+          resolve({ error });
+        } else {
+          resolve({ result });
+        }
+      });
+    });
   });
 
   autoUpdater.on("checking-for-update", () => {

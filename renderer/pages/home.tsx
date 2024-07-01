@@ -23,6 +23,7 @@ export default function HomePage() {
   const handleGetGreeting = async () => {
     const response = await window.ipc.invoke("sayHello", name);
     console.log("clicado");
+    console.log(response);
     if (response.error) {
       console.error(response.error);
     } else {
@@ -32,6 +33,7 @@ export default function HomePage() {
 
   const handleAdd = async () => {
     const response = await window.ipc.invoke("sum", a, b);
+    console.log(response);
     if (response.error) {
       console.error(response.error);
     } else {
