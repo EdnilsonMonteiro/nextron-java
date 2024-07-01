@@ -1,3 +1,4 @@
+import { ipcRenderer } from "electron";
 import React, { useState } from "react";
 import Head from "next/head";
 import {
@@ -7,36 +8,26 @@ import {
   Text,
   Link as ChakraLink,
 } from "@chakra-ui/react";
-
 import { Container } from "../components/Container";
 import { DarkModeSwitch } from "../components/DarkModeSwitch";
 import { Footer } from "../components/Footer";
 import { Hero } from "../components/Hero";
 
 export default function HomePage() {
-  const [name, setName] = useState("");
-  const [greeting, setGreeting] = useState("");
-  const [a, setA] = useState(0);
-  const [b, setB] = useState(0);
-  const [sum, setSum] = useState<number | null>(null);
+  const [name, setName] = useState('');
+  const [greeting, setGreeting] = useState('');
+  const [a, setA] = useState(null);
+  const [b, setB] = useState(null);
+  const [sum, setSum] = useState(null);
 
   const handleGetGreeting = async () => {
-    const response = await window.ipc.invoke("getGreeting", name);
-    console.log("clicado");
-    if (response.error) {
-      console.error(response.error);
-    } else {
-      setGreeting(response.result);
-    }
+    const response = await ipcRenderer.invoke('sayHello', name);
+    setGreeting(response);
   };
 
   const handleAdd = async () => {
-    const response = await window.ipc.invoke("add", a, b);
-    if (response.error) {
-      console.error(response.error);
-    } else {
-      setSum(parseInt(response.result, 10));
-    }
+    const result = await ipcRenderer.invoke('sum', a, b);
+    setSum(result);
   };
 
   return (
@@ -60,13 +51,13 @@ export default function HomePage() {
           <Input
             placeholder="Enter first number, please"
             type="number"
-            value={a}
+            value={a !== null ? a : ''}
             onChange={(e) => setA(parseInt(e.target.value, 10))}
           />
           <Input
-            placeholder="Enter second number, , please"
+            placeholder="Enter second number, please"
             type="number"
-            value={b}
+            value={b !== null ? b : ''}
             onChange={(e) => setB(parseInt(e.target.value, 10))}
           />
           <Button colorScheme="teal" onClick={handleAdd}>

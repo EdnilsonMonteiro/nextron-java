@@ -9,10 +9,9 @@ import {
 } from "electron";
 import serve from "electron-serve";
 import { createMainWindow } from "./mainWindow";
-import { fetchGreeting, fetchSum } from "./javaMethods";
+import { sayHello, sum } from "./javaMethods";
 import { autoUpdater } from "electron-updater";
 import dotenv from "dotenv";
-import startBackend from './start-backend.mjs';
 
 dotenv.config();
 
@@ -45,24 +44,23 @@ function showNotification(title, body) {
 }
 
 app.whenReady().then(async () => {
-  await startBackend(app.isPackaged);
   await createMainWindow();
 
-  ipcMain.handle("getGreeting", async (_event, name: string) => {
+  ipcMain.handle('sayHello', async (event, name) => {
     try {
-      const result = await fetchGreeting(name);
-      return { result };
+      const greeting = await sayHello(name);
+      return greeting;
     } catch (error) {
-      return { error: error.message };
+      return error;
     }
   });
-
-  ipcMain.handle("add", async (_event, a: number, b: number) => {
+  
+  ipcMain.handle('sum', async (event, a, b) => {
     try {
-      const result = await fetchSum(a, b);
-      return { result };
+      const result = await sum(a, b);
+      return result;
     } catch (error) {
-      return { error: error.message };
+      return error;
     }
   });
 

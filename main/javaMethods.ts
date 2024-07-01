@@ -1,21 +1,25 @@
-const axios = require('axios');
+import { exec } from 'child_process';
 
-export async function fetchGreeting(name) {
-    try {
-        const response = await axios.get(`http://localhost:8080/api/hello?name=${name}`);
-        return response.data;
-    } catch (error) {
-        console.error('Erro ao obter saudação:', error);
-        throw error;
-    }
+export function sayHello(name: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(`java -cp demo-1.0-SNAPSHOT.jar com.example.App sayHello ${name}`, (error, stdout, stderr) => {
+      if (error) {
+        reject(`Error: ${stderr}`);
+      } else {
+        resolve(stdout.trim());
+      }
+    });
+  });
 }
 
-export async function fetchSum(a, b) {
-    try {
-        const response = await axios.get(`http://localhost:8080/api/sum?a=${a}&b=${b}`);
-        return response.data; 
-    } catch (error) {
-        console.error('Erro ao calcular soma:', error);
-        throw error; 
-    }
+export function sum(a: number, b: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(`java -cp demo-1.0-SNAPSHOT.jar com.example.App sum ${a} ${b}`, (error, stdout, stderr) => {
+      if (error) {
+        reject(`Error: ${stderr}`);
+      } else {
+        resolve(stdout.trim());
+      }
+    });
+  });
 }
